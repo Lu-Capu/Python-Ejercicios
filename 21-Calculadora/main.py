@@ -3,11 +3,19 @@ from tkinter import messagebox
 
 class Aplication(tkinter.Frame):
     
-    
-    def __init__(self, master=None ):
-        super().__init__(master, width="400", height="300", bg="#222")
-        self.master=master
-        self.pack()
+    def __init__(self, master=None):
+        super().__init__(master, bg="#1e1e1e")
+        self.master = master
+        self.pack(fill="both", expand=True)
+        
+        # Configurar las 4 columnas para que se expandan uniformemente
+        for col in range(4):
+            self.columnconfigure(col, weight=1)
+            
+        # Configurar filas para dar un alto uniforme a los botones
+        for row in range(2, 7):
+            self.rowconfigure(row, weight=1)
+
         self.create_widgets()
     
     def resultado(self):
@@ -17,13 +25,13 @@ class Aplication(tkinter.Frame):
                 res = eval(expresion)
                 self.lbl_resultado["text"] = res
             else:
-                messagebox.showinfo("Dato Curioso", "Debes ingresar números")
+                messagebox.showinfo("Información", "Debes ingresar números")
         except ZeroDivisionError:
             messagebox.showerror("Error", "No se puede dividir entre cero")
         except Exception:
             messagebox.showerror("Error", "Expresión inválida")
 
-    def mostrar(self,num):
+    def mostrar(self, num):
         self.lbl_resultado["text"] = str(self.lbl_resultado["text"]) + str(num)
 
     def clear(self):
@@ -34,67 +42,81 @@ class Aplication(tkinter.Frame):
     
     def create_widgets(self):
         
-        #Elementos reutilizables
-        fgB = ("#fff")
-        fontC = ("Arial", 12)
+        font_num = ("Segoe UI", 12, "bold")
+        font_pantalla = ("Segoe UI", 20, "bold")
         
-        self.lblTitulo = tkinter.Label(self, text="Calculadora", fg="black", bg="gray", font=fontC)
-        self.lblTitulo.grid(row=0, column=0, ipady=5, sticky="ew", columnspan=4)
+        bg_num = "#333333"       # Gris para números
+        bg_op = "#3e3e42"        # Gris medio para operadores
+        bg_clear = "#e53935"     # Rojo para borrar (AC)
+        bg_igual = "#00acc1"     # Turquesa para el botón igual (=)
+        fg_texto = "#ffffff"     # Texto blanco
+        
+        # 1. Título
+        self.lblTitulo = tkinter.Label(
+            self, text="Calculadora", fg="#888888", bg="#1e1e1e", font=("Segoe UI", 10)
+        )
+        self.lblTitulo.grid(row=0, column=0, columnspan=4, pady=(10, 5))
 
-        self.lbl_resultado = tkinter.Label(self, fg="black", font=fontC)
-        self.lbl_resultado.grid(row=1, column=0, sticky="ew", columnspan=4)
+        # 2. Pantalla de resultado
+        self.lbl_resultado = tkinter.Label(
+            self, text="", fg=fg_texto, bg="#2d2d30", font=font_pantalla, anchor="e", padx=15
+        )
+        self.lbl_resultado.grid(row=1, column=0, columnspan=4, sticky="ew", padx=12, pady=(0, 15), ipady=10)
 
-        # Columna 0
-        self.btnAC = tkinter.Button(self, text="AC", bg="green", fg=fgB, command=self.clear)
-        self.btnAC.grid(row=2, column=0, ipadx=35, ipady=5)
-        self.btn7 = tkinter.Button(self, text="7", command=lambda: self.mostrar(7))
-        self.btn7.grid(row=3, column=0, ipadx=35, ipady=5)
-        self.btn4 = tkinter.Button(self, text="4", command=lambda: self.mostrar(4))
-        self.btn4.grid(row=4, column=0, ipadx=35, ipady=5)
-        self.btn1 = tkinter.Button(self, text="1", command=lambda: self.mostrar(1))
-        self.btn1.grid(row=5, column=0, ipadx=35, ipady=5)
-        self.btn0 = tkinter.Button(self, text="0", command=lambda: self.mostrar(0))
-        self.btn0.grid(row=6, column=0, ipadx=35, ipady=5)
+        # Diccionario con la distribución de los botones para no repetir tanto código
+        botones = [
+            # Texto, fila, columna, color_fondo, comando
+            ("AC", 2, 0, bg_clear, self.clear),
+            ("()", 2, 1, bg_op, lambda: self.mostrar("(")),
+            ("%",  2, 2, bg_op, lambda: self.mostrar("%")),
+            ("/",  2, 3, bg_op, lambda: self.mostrar("/")),
+            
+            ("7",  3, 0, bg_num, lambda: self.mostrar(7)),
+            ("8",  3, 1, bg_num, lambda: self.mostrar(8)),
+            ("9",  3, 2, bg_num, lambda: self.mostrar(9)),
+            ("X",  3, 3, bg_op, lambda: self.mostrar("X")),
+            
+            ("4",  4, 0, bg_num, lambda: self.mostrar(4)),
+            ("5",  4, 1, bg_num, lambda: self.mostrar(5)),
+            ("6",  4, 2, bg_num, lambda: self.mostrar(6)),
+            ("-",  4, 3, bg_op, lambda: self.mostrar("-")),
+            
+            ("1",  5, 0, bg_num, lambda: self.mostrar(1)),
+            ("2",  5, 1, bg_num, lambda: self.mostrar(2)),
+            ("3",  5, 2, bg_num, lambda: self.mostrar(3)),
+            ("+",  5, 3, bg_op, lambda: self.mostrar("+")),
+            
+            ("0",  6, 0, bg_num, lambda: self.mostrar(0)),
+            (".",  6, 1, bg_num, lambda: self.mostrar(".")),
+            ("<-", 6, 2, bg_op, self.borrar_uno),
+            ("=",  6, 3, bg_igual, self.resultado),
+        ]
 
-        # Columna 1
-        self.btnP = tkinter.Button(self, text="()", command=lambda: self.mostrar("("))
-        self.btnP.grid(row=2, column=1, ipadx=35, ipady=5)
-        self.btn8 = tkinter.Button(self, text="8", command=lambda: self.mostrar(8))
-        self.btn8.grid(row=3, column=1, ipadx=35, ipady=5)
-        self.btn5 = tkinter.Button(self, text="5", command=lambda: self.mostrar(5))
-        self.btn5.grid(row=4, column=1, ipadx=35, ipady=5)
-        self.btn2 = tkinter.Button(self, text="2", command=lambda: self.mostrar(2))
-        self.btn2.grid(row=5, column=1, ipadx=35, ipady=5)
-        self.btnPT = tkinter.Button(self, text=".", command=lambda: self.mostrar("."))
-        self.btnPT.grid(row=6, column=1, ipadx=35, ipady=5)
-
-        # Columna 2
-        self.btnPO = tkinter.Button(self, text="%", command=lambda: self.mostrar("%"))
-        self.btnPO.grid(row=2, column=2, ipadx=35, ipady=5)
-        self.btn9 = tkinter.Button(self, text="9", command=lambda: self.mostrar(9))
-        self.btn9.grid(row=3, column=2, ipadx=35, ipady=5)
-        self.btn6 = tkinter.Button(self, text="6", command=lambda: self.mostrar(6))
-        self.btn6.grid(row=4, column=2, ipadx=35, ipady=5)
-        self.btn3 = tkinter.Button(self, text="3", command=lambda: self.mostrar(3))
-        self.btn3.grid(row=5, column=2, ipadx=35, ipady=5)
-        self.btn_atras = tkinter.Button(self, text="<-", command=self.borrar_uno)
-        self.btn_atras.grid(row=6, column=2, ipadx=35, ipady=5)
-
-        # Columna 3
-        self.btn_dividir = tkinter.Button(self, text="/", command=lambda: self.mostrar("/"))
-        self.btn_dividir.grid(row=2, column=3, ipadx=35, ipady=5)
-        self.btn_multi = tkinter.Button(self, text="X", command=lambda: self.mostrar("X"))
-        self.btn_multi.grid(row=3, column=3, ipadx=35, ipady=5)
-        self.btn_rest = tkinter.Button(self, text="-", command=lambda: self.mostrar("-"))
-        self.btn_rest.grid(row=4, column=3, ipadx=35, ipady=5)
-        self.btn_sum = tkinter.Button(self, text="+", command=lambda: self.mostrar("+"))
-        self.btn_sum.grid(row=5, column=3, ipadx=35, ipady=5)
-        self.btn_igual = tkinter.Button(self, text="=", bg="cyan", fg="black", command=self.resultado)
-        self.btn_igual.grid(row=6, column=3, ipadx=35, ipady=5)
+        # Creación de botones en un bucle simple
+        for texto, fila, col, color, cmd in botones:
+            btn = tkinter.Button(
+                self, 
+                text=texto, 
+                bg=color, 
+                fg=fg_texto, 
+                font=font_num, 
+                bd=0,                 # Sin borde 3D
+                relief="flat",        # Diseño plano
+                activebackground="#505050", # Color al hacer clic
+                activeforeground=fg_texto,
+                command=cmd
+            )
+            btn.grid(row=fila, column=col, sticky="nsew", padx=3, pady=3)
 
 
 root = tkinter.Tk()
+root.title("Calculadora")
+root.geometry("350x450")
+root.config(bg="#1e1e1e")
+
+# Ya no estira
+root.resizable(False, False)
+
 app = Aplication(root)
 
-root.title("Titulo")
-app.mainloop()
+root.mainloop()
