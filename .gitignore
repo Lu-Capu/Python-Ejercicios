@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# Scripts de ventana (copias de respaldo)
+*.pyw
+
 # Entornos virtuales
 .venv/
 venv/

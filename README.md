@@ -9,8 +9,8 @@ Cada carpeta es independiente y se ejecuta por separado.
 python 01-Prueba/main.py
 ```
 
-Las carpetas `20-Tkinter` y `21-Calculadora` abren una ventana grafica, por eso usan
-extension `.pyw` para ejecutarse sin consola.
+Las carpetas `20-Tkinter` y `21-Calculadora` abren una ventana grafica.
+Los archivos `*.pyw` estan ignorados en `.gitignore` porque son copias de respaldo.
 
 ## Ejercicios
 
@@ -27,7 +27,7 @@ extension `.pyw` para ejecutarse sin consola.
 | 09 | `09-HipotesisCollatz` | Conjetura de Collatz | Aplica la conjetura hasta llegar a 1 | `while`, `%`, `//`, `try/except` | `main.py` |
 | 10 | `10-Lista` | Manipulacion de listas | Anade, elimina e inserta integrantes de una lista | `append`, `del`, `insert`, `len`, `range` | `main.py` |
 | 20 | `20-Tkinter` | GUI Suma | Ventana con dos campos que suma dos valores | `tkinter`, `grid()`, `Entry`, `Button`, `messagebox` | `main.py` |
-| 21 | `21-Calculadora` | Calculadora GUI | Calculadora completa con teclado numerico | `tkinter`, `lambda`, `eval`, `grid`, `messagebox` | `main.py` / `main_cop.pyw` |
+| 21 | `21-Calculadora` | Calculadora GUI | Calculadora completa con teclado numerico | `tkinter`, `lambda`, `eval`, `grid`, `messagebox` | `main.py` |
 
 ## Estructura
 
