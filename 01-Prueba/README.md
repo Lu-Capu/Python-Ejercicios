@@ -6,7 +6,5 @@ Convierte millas a kilometros.
 python 01-Prueba/main.py
 ```
 
-Pides una distancia y la multiplica por 1.61. Por ejemplo, 5 millas son 8.05 km.
-
-El `try` / `except` esta para que si escribas letras te avise y vuelva a
-preguntar, en vez de terminar con un error.
+Pides la distancia y la multiplica por 1.61. Si no es un numero te lo vuelve a
+preguntar.

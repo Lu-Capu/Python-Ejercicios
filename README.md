@@ -13,20 +13,9 @@ Las carpetas `20-Tkinter`, `21-Calculadora`, `22-To-Do_List` y `23-GestorBD`
 abren una ventana grafica. Los archivos `*.pyw` estan ignorados en `.gitignore`
 porque son copias de respaldo.
 
-`23-GestorBD` crea la base de datos `Users_BD.db` en la carpeta `Downloads`
-cuando pulsas **Archivo → Crear BD**; todavia hay que ejecutar ese paso antes de
-usar los botones del CRUD.
-
-### Ver o modificar la base de datos
-
-El archivo `.db` se genera solo, asi que no hay nada que instalar para usar el
-CRUD. Pero si quieres mirar las tablas o cambiar datos por tu cuenta, el
-proyecto **no incluye ningun visor**: instala
-[DB Browser for SQLite](https://sqlitebrowser.org/), que es el mas usado y es
-gratuito. Abre **Open Database**, elige
-`~/Downloads/MiApp_BD/Users_BD.db`, y en la pestana **Browse Data** veras la
-tabla `USER`. Recuerda cerrar la app antes, porque el cierre de conexion y los
-`commit` ocurren al terminar cada operacion.
+`23-GestorBD` necesita que pulses **Archivo → Crear BD** antes de usar el CRUD.
+Eso genera `Users_BD.db` en la carpeta `Downloads`. Para abrirlo por fuera hace
+falta un visor, como [DB Browser for SQLite](https://sqlitebrowser.org/).
 
 ## Ejercicios
 
