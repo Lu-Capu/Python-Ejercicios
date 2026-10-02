@@ -17,6 +17,17 @@ porque son copias de respaldo.
 cuando pulsas **Archivo → Crear BD**; todavia hay que ejecutar ese paso antes de
 usar los botones del CRUD.
 
+### Ver o modificar la base de datos
+
+El archivo `.db` se genera solo, asi que no hay nada que instalar para usar el
+CRUD. Pero si quieres mirar las tablas o cambiar datos por tu cuenta, el
+proyecto **no incluye ningun visor**: instala
+[DB Browser for SQLite](https://sqlitebrowser.org/), que es el mas usado y es
+gratuito. Abre **Open Database**, elige
+`~/Downloads/MiApp_BD/Users_BD.db`, y en la pestana **Browse Data** veras la
+tabla `USER`. Recuerda cerrar la app antes, porque el cierre de conexion y los
+`commit` ocurren al terminar cada operacion.
+
 ## Ejercicios
 
 | # | Carpeta | Ejercicio | Que hace | Concepts | Archivo |
