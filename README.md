@@ -36,7 +36,7 @@ Cada carpeta tiene su propio `README.md` con la explicacion de ese ejercicio.
 | 20 | `20-Tkinter` | GUI Suma | Ventana con dos campos que suma dos valores | `tkinter`, `grid()`, `Entry`, `Button`, `messagebox` | `main.py` |
 | 21 | `21-Calculadora` | Calculadora GUI | Calculadora completa con tema oscuro | `tkinter`, `lambda`, `eval`, `grid`, `messagebox` | `main.py` |
 | 22 | `22-To-Do_List` | Lista de tareas GUI | Agrega, edita y elimina tareas en una ventana con tema oscuro | `tkinter`, `Listbox`, `ttk.Style`, `Frame`, `grid()`, eventos `<Enter>` / `<Leave>` | `main.py` |
-| 23 | `23-GestorBD` | CRUD de usuarios con SQLite | Gestor de usuarios sobre una base de datos SQLite creada en tiempo de ejecucion | `sqlite3`, `tkinter`, `Menu`, `simpledialog`, consultas parametrizadas, `pathlib` | `main.py` |
+| 23 | `23-GestorBD` | CRUD de usuarios con SQLite | Gestor de usuarios separado en modulo de datos, interfaz y textos | `sqlite3`, `tkinter`, `Menu`, `simpledialog`, `pathlib`, `contextlib`, consultas parametrizadas | `main.py` |
 
 ## Estructura
 
@@ -57,7 +57,14 @@ Python/
 |-- 20-Tkinter/main.py
 |-- 21-Calculadora/main.py
 |-- 22-To-Do_List/main.py
-`-- 23-GestorBD/main.py
+|`-- 23-GestorBD/
+    |-- main.py
+    |-- app.py
+    |-- config.py
+    |-- database.py
+    |-- textos.py
+    `-- ui/
 ```
 
-Cada carpeta tiene tambien su `README.md`.
+Cada carpeta tiene tambien su `README.md`. La 23 es la unica repartida en varios
+archivos.
