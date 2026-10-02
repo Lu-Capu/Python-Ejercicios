@@ -9,8 +9,13 @@ Cada carpeta es independiente y se ejecuta por separado.
 python 01-Prueba/main.py
 ```
 
-Las carpetas `20-Tkinter` y `21-Calculadora` abren una ventana grafica.
-Los archivos `*.pyw` estan ignorados en `.gitignore` porque son copias de respaldo.
+Las carpetas `20-Tkinter`, `21-Calculadora`, `22-To-Do_List` y `23-GestorBD`
+abren una ventana grafica. Los archivos `*.pyw` estan ignorados en `.gitignore`
+porque son copias de respaldo.
+
+`23-GestorBD` crea la base de datos `Users_BD.db` en la carpeta `Downloads`
+cuando pulsas **Archivo → Crear BD**; todavia hay que ejecutar ese paso antes de
+usar los botones del CRUD.
 
 ## Ejercicios
 
@@ -28,6 +33,8 @@ Los archivos `*.pyw` estan ignorados en `.gitignore` porque son copias de respal
 | 10 | `10-Lista` | Manipulacion de listas | Anade, elimina e inserta integrantes de una lista | `append`, `del`, `insert`, `len`, `range` | `main.py` |
 | 20 | `20-Tkinter` | GUI Suma | Ventana con dos campos que suma dos valores | `tkinter`, `grid()`, `Entry`, `Button`, `messagebox` | `main.py` |
 | 21 | `21-Calculadora` | Calculadora GUI | Calculadora completa con teclado numerico | `tkinter`, `lambda`, `eval`, `grid`, `messagebox` | `main.py` |
+| 22 | `22-To-Do_List` | Lista de tareas GUI | Agrega, edita y elimina tareas en una ventana con tema oscuro | `tkinter`, `Listbox`, `ttk.Style`, `Frame`, `grid()`, eventos `<Enter>` / `<Leave>` | `main.py` |
+| 23 | `23-GestorBD` | CRUD de usuarios con SQLite | Gestor de usuarios sobre una base de datos SQLite creada en tiempo de ejecucion | `sqlite3`, `tkinter`, `Menu`, `simpledialog`, consultas parametrizadas, `pathlib` | `main.py` |
 
 ## Estructura
 
@@ -46,5 +53,7 @@ Python/
 |-- 09-HipotesisCollatz/main.py
 |-- 10-Lista/main.py
 |-- 20-Tkinter/main.py
-`-- 21-Calculadora/main.py
+|-- 21-Calculadora/main.py
+|-- 22-To-Do_List/main.py
+`-- 23-GestorBD/main.py
 ```

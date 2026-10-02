@@ -6,6 +6,9 @@ __pycache__/
 # Scripts de ventana (copias de respaldo)
 *.pyw
 
+# Archivo temporal del editor online
+tempCodeRunnerFile.py
+
 # Entornos virtuales
 .venv/
 venv/
