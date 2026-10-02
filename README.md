@@ -30,12 +30,14 @@ tabla `USER`. Recuerda cerrar la app antes, porque el cierre de conexion y los
 
 ## Ejercicios
 
+Cada carpeta tiene su propio `README.md` con la explicacion de ese ejercicio.
+
 | # | Carpeta | Ejercicio | Que hace | Concepts | Archivo |
 |---|---------|-----------|----------|----------|---------|
 | 01 | `01-Prueba` | Conversor de millas | Convierte millas a kilometros con validacion de entrada | `input`, `while`, `try/except`, `float`, f-strings | `main.py` |
 | 02 | `02-Ecuacion1` | Ecuacion de primer grado | Evalua `y = 3x³ - 2x² + 3x - 1` para varios valores de x | listas, `append`, `.strip()`, control de flujo | `main.py` |
 | 03 | `03-Ecuacion2` | Ecuacion anidada | Evalua una fraccion continua de fracciones | listas, operadores, formato `>6.2f` | `main.py` |
-| 04 | `04-EvaluadorTiempo` | Evaluador de tiempo | Suma una duracion a una hora y normaliza a hh:mm | `int`, `float`, `//`, `%`, `:02d` | `main.py` |
+| 04 | `04-EvaluadorTiempo` | Evaluador de tiempo | Suma una duracion a una hora y normaliza los minutos | `int`, `float`, `//`, `%`, `:02d` | `main.py` |
 | 05 | `05-Bisiesto` | Anio bisiesto | Determina si un anio es bisiesto (regla gregoriana) | condicionales, `and/or`, `%`, `exit()` | `main.py` |
 | 06 | `06-BucleWhile` | Adivina el numero | Juego de adivinar un numero secreto con `while` | `while`, `break`, `exit()`, texto multilinea | `main.py` |
 | 07 | `07-CuentaRegresiva` | Cuenta regresiva | Cuenta de 5 a 1 en la misma linea | `for`, `range()`, `time.sleep()`, `end=` | `main.py` |
@@ -43,7 +45,7 @@ tabla `USER`. Recuerda cerrar la app antes, porque el cierre de conexion y los
 | 09 | `09-HipotesisCollatz` | Conjetura de Collatz | Aplica la conjetura hasta llegar a 1 | `while`, `%`, `//`, `try/except` | `main.py` |
 | 10 | `10-Lista` | Manipulacion de listas | Anade, elimina e inserta integrantes de una lista | `append`, `del`, `insert`, `len`, `range` | `main.py` |
 | 20 | `20-Tkinter` | GUI Suma | Ventana con dos campos que suma dos valores | `tkinter`, `grid()`, `Entry`, `Button`, `messagebox` | `main.py` |
-| 21 | `21-Calculadora` | Calculadora GUI | Calculadora completa con teclado numerico | `tkinter`, `lambda`, `eval`, `grid`, `messagebox` | `main.py` |
+| 21 | `21-Calculadora` | Calculadora GUI | Calculadora completa con tema oscuro | `tkinter`, `lambda`, `eval`, `grid`, `messagebox` | `main.py` |
 | 22 | `22-To-Do_List` | Lista de tareas GUI | Agrega, edita y elimina tareas en una ventana con tema oscuro | `tkinter`, `Listbox`, `ttk.Style`, `Frame`, `grid()`, eventos `<Enter>` / `<Leave>` | `main.py` |
 | 23 | `23-GestorBD` | CRUD de usuarios con SQLite | Gestor de usuarios sobre una base de datos SQLite creada en tiempo de ejecucion | `sqlite3`, `tkinter`, `Menu`, `simpledialog`, consultas parametrizadas, `pathlib` | `main.py` |
 
@@ -68,3 +70,5 @@ Python/
 |-- 22-To-Do_List/main.py
 `-- 23-GestorBD/main.py
 ```
+
+Cada carpeta tiene tambien su `README.md`.
