@@ -225,10 +225,10 @@ class Application(Frame):
         if datos is None:
             return
         nombre, apellido, password, address = datos
-        self.id=simpledialog.askinteger("Buscar ID","Ingrese el id del usuario")
-        if id is None:
+        self.id = simpledialog.askinteger("Buscar ID", "Ingrese el id del usuario")
+        if self.id is None:
             return
-        self.update( nombre, apellido, password, address, self.id)
+        self.update(nombre, apellido, password, address, self.id)
         
         pass
 
