@@ -4,7 +4,7 @@ from ventana import ventanaPrincipal
 def main():
     root = Tk()
     root.title("Gestor de gastos")
-    root.geometry("500x650")
+    root.geometry("1000x600")
     root.resizable(False, False)
     
     app = ventanaPrincipal(root)

@@ -1,4 +1,4 @@
-from tkinter import Tk, Label, Frame, Menu, Entry, ttk, Button
+from tkinter import Label, Frame, Menu, Entry, ttk, Button
 from config import FUENTE, BACKGASTO, BACKB, BACKENCABEZADO, FG, FG_ENTRY
 
 class ventanaPrincipal(Frame):
@@ -8,10 +8,12 @@ class ventanaPrincipal(Frame):
         self.master = master
         self.pack(fill="both", expand=True)   
         
-        for i in range(4):
-            self.grid_columnconfigure(i, weight=1)  
-        for i in range(5):
-            self.grid_rowconfigure(i, weight=1)  
+
+        self.grid_columnconfigure(0, weight=0)   # columna izquierda: solo su ancho
+        self.grid_columnconfigure(1, weight=1)   # tabla: absorbe el resto
+        self.grid_rowconfigure(0, weight=0)      # encabezado: solo su altura
+        self.grid_rowconfigure(1, weight=1)      
+        self.grid_rowconfigure(2, weight=1)     
                 
         self._create_widgets()
         self._centrar_ventana()
@@ -27,7 +29,8 @@ class ventanaPrincipal(Frame):
         self._create_menu()
         self._create_encabezado()
         self._create_gastos()
-        self._create_tabla()
+        self._create_filtro()
+        self.create_tabla()
     
     def _centrar_ventana(self):
         self.master.update_idletasks()
@@ -60,23 +63,23 @@ class ventanaPrincipal(Frame):
             
     def _create_encabezado(self):
 
-        panel = Frame(self, bg=BACKENCABEZADO, height=70)
-        panel.pack(side="top", fill="x")
+        panel = Frame(self, bg=BACKENCABEZADO)
+        panel.grid(row=0,column=0,ipady=10, sticky="nwe", columnspan=4)
 
-        lbl01 = Label(panel, text="Control de gastos", font=(FUENTE, 16), bg=BACKENCABEZADO, fg=FG)
-        lbl01.place(x=10, y=10)
+        lbl01 = Label(panel, text="Control de gastos", font=(FUENTE, 18, "bold"), bg=BACKENCABEZADO, fg=FG)
+        lbl01.pack(anchor="w", padx=10, pady=(10,0))
 
-        lbl02 = Label(panel, text="Registra y clasifica tus gastos", font=(FUENTE, 10), bg=BACKENCABEZADO, fg=FG)
-        lbl02.place(x=10, y=40)
+        lbl02 = Label(panel, text="Registra y clasifica tus gastos", font=(FUENTE, 12), bg=BACKENCABEZADO, fg=FG)
+        lbl02.pack(anchor="w", padx=10)
     
     def _create_gastos(self):
         opciones = ["Comida", "Transporte", "Entretenimiento", "Servicios", "Otros"]
 
-        panel = Frame(self, bg=BACKB)
-        panel.pack(side="top", fill="x")
+        panel = Frame(self, bg=BACKGASTO)
+        panel.grid(row=1,column=0, sticky="nswe")
 
         form = Frame(panel, bg=BACKGASTO, relief="solid", highlightbackground="#00bcd4",highlightthickness=2)
-        form.pack(pady=15)
+        form.pack(padx=10,pady=10, side="left")
 
         lbl0 = Label(form, text="Descripción: ", font=(FUENTE, 12), bg=BACKGASTO, fg=FG)
         lbl1 = Label(form, text="Monto: ", font=(FUENTE, 12), bg=BACKGASTO, fg=FG)
@@ -111,14 +114,14 @@ class ventanaPrincipal(Frame):
         self.btnAgregar.grid(row=0, column=0, padx=10)
         self.btnLimpiar.grid(row=0, column=1, padx=10)
 
-    def _create_tabla(self):
+    def _create_filtro(self):
         opciones = ["Comida", "Transporte", "Entretenimiento", "Servicios", "Otros"]
         meses = ["Todos", "Mes Anterior"]
         
-        panel = Frame(self, bg=BACKB)
-        panel.pack(side="top", fill="x")
+        panel = Frame(self, bg=BACKGASTO)
+        panel.grid(row=2,column=0, sticky="nswe")
         form = Frame(panel, bg=BACKGASTO)    
-        form.pack(pady=10)
+        form.pack(padx=10,pady=5, side="left")
         
         lbl0=Label(form, text="Categoría: ", bg=BACKGASTO, fg=FG, font=(FUENTE,12))
         lbl1=Label(form, text="Mes: ", bg=BACKGASTO, fg=FG, font=(FUENTE,12))
@@ -132,9 +135,30 @@ class ventanaPrincipal(Frame):
         self.cboMES_filtro.grid(row=1, column=1, padx=10, pady=(5, 10), sticky="w")
         self.cboMES_filtro.current(0)
         
+    def create_tabla(self):
         
-        lla=Label(form, text="AQUI VA LA TABLA", font=(FUENTE,20))
-        lla.grid(row=2, column=1)
-    
+        panel = Frame(self, bg="gray")
+        panel.grid(row=1, column=1, sticky="nsew", rowspan=2)
+
+        self.tabla = ttk.Treeview(panel, columns=("col1", "col2", "col3", "col4"))
+
+        self.tabla.column("#0", width=50, anchor="center")
+        self.tabla.column("col1", width=200, anchor="w")
+        self.tabla.column("col2", width=90, anchor="e")
+        self.tabla.column("col3", width=120, anchor="center")
+        self.tabla.column("col4", width=100, anchor="center")
+
+        self.tabla.heading("#0", text="Id", anchor="center")
+        self.tabla.heading("col1", text="Descripción", anchor="center")
+        self.tabla.heading("col2", text="Monto", anchor="center")
+        self.tabla.heading("col3", text="Categoría", anchor="center")
+        self.tabla.heading("col4", text="Fecha", anchor="center")
+
+        scroll = ttk.Scrollbar(panel, orient="vertical", command=self.tabla.yview)
+        self.tabla.configure(yscrollcommand=scroll.set)
+
+        scroll.pack(side="right", fill="y")
+        self.tabla.pack(side="left", fill="both", expand=True)
+       
 
         
