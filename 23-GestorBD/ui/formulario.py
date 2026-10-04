@@ -3,8 +3,7 @@ from config import FUENTE, TAMANIO, BACKLBL
 
 
 class FormularioUsuario(Frame):
-    """Panel con los campos Name, Last Name, Password y Address."""
-
+    
     def __init__(self, master):
         super().__init__(master, bg="#ffffff", bd=0.5, relief="solid")
         self.create_widgets()
@@ -33,7 +32,7 @@ class FormularioUsuario(Frame):
         self.text_addres.grid(row=3, column=1, padx=10, pady=10, sticky="we")
 
     def get_datos(self):
-        """Devuelve (nombre, apellido, password, address) o None si falta algo."""
+        
         nombre = self.txt_name.get().strip()
         apellido = self.txt_last_name.get().strip()
         password = self.txt_password.get().strip()

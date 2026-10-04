@@ -1,8 +1,3 @@
-"""Capa de datos: solo habla con SQLite. No conoce Tkinter ni messagebox.
-
-Todos los métodos pueden lanzar sqlite3.Error; quien los llame decide
-cómo mostrar el error al usuario.
-"""
 import sqlite3
 from contextlib import closing
 from pathlib import Path
@@ -40,7 +35,6 @@ class UserRepository:
                 )
 
     def actualizar(self, nombre, apellido, password, address, id_usuario):
-        """Devuelve True si se actualizó alguna fila."""
         with closing(self._conectar()) as con:
             with con:
                 cursor = con.execute(
@@ -51,13 +45,11 @@ class UserRepository:
                 return cursor.rowcount > 0
 
     def buscar_por_id(self, id_usuario):
-        """Devuelve (id, nombre, apellido, password, address) o None."""
         with closing(self._conectar()) as con:
             cursor = con.execute("SELECT * FROM USER WHERE id=?", (id_usuario,))
-            return cursor.fetchone()
+            return cursor.fetchone()#Devuelve como Tupla
 
     def eliminar(self, id_usuario):
-        """Devuelve True si se eliminó alguna fila."""
         with closing(self._conectar()) as con:
             with con:
                 cursor = con.execute("DELETE FROM USER WHERE id=?", (id_usuario,))

@@ -3,11 +3,7 @@ from config import FUENTE, TAMANIO, BACKB
 
 
 class BarraBotones(Frame):
-    """Fila de botones Create / Read / Update / Delete.
-
-    `comandos` es un diccionario con las claves: create, read, update, delete.
-    """
-
+    #Diccionario que va arecibir   {"create": self.create_user, "read": self.read, ...}
     def __init__(self, master, comandos):
         super().__init__(master, bg=BACKB)
         self.comandos = comandos

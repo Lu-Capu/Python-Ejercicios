@@ -1,4 +1,3 @@
-"""Ventana principal: une la interfaz (ui/) con la base de datos (database.py)."""
 import sqlite3
 from tkinter import Frame, messagebox, simpledialog
 
@@ -33,6 +32,7 @@ class Application(Frame):
         self.master.geometry(f"{ancho}x{alto}+{x}+{y}")
 
     def create_widgets(self):
+        
         self.menu_bar = BarraMenu(self.master, {
             "crear_bd": self.crear_bd,
             "salir": self.quit,

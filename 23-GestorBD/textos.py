@@ -7,8 +7,6 @@ ABOUT_ME = textwrap.dedent("""\
     Este es uno de los proyectos que he desarrollado. Puedes visitar
     mis demás repositorios en mi GitHub:
     https://github.com/Lu-Capu/
-
-    ...Ah y me gusta una chica de Amauta a la fecha de este proyecto (Esto se editará)
 """)
 
 LICENCIA = textwrap.dedent("""\

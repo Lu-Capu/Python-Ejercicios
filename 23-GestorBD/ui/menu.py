@@ -3,12 +3,7 @@ from config import FUENTE
 
 
 class BarraMenu(Menu):
-    """Barra de menú superior.
-
-    `comandos` es un diccionario con las claves: crear_bd, salir, create,
-    read, update, delete, license, about.
-    """
-
+    #commandos es un diccionario
     def __init__(self, ventana, comandos):
         super().__init__(ventana)
         self.comandos = comandos
