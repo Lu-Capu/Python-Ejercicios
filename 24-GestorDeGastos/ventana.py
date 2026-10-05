@@ -1,5 +1,8 @@
-from tkinter import Label, Frame, Menu, Entry, ttk, Button
+from tkinter import Label, Frame, Menu, Entry, ttk, Button, Toplevel
 from config import FUENTE, BACKGASTO, BACKB, BACKENCABEZADO, FG, FG_ENTRY
+from ui.button import Botones
+from ui.BarraMenu import BarraMenu
+from ventanaCAT import Ventana02
 
 class ventanaPrincipal(Frame):
     
@@ -16,8 +19,22 @@ class ventanaPrincipal(Frame):
         self.grid_rowconfigure(2, weight=1)     
                 
         self._create_widgets()
-        self._centrar_ventana()
-    
+        self.centrar_ventana()
+        
+    def abrir_ventana02(self):
+    # 1. Ocultamos la ventana principal
+        self.master.withdraw()
+
+        # 2. Creación de la ventana secundaria Toplevel
+        top = Toplevel(self.master)
+        top.title("Segunda Ventana")
+        top.geometry("1000x400")
+
+        # 3. Vinculamos el evento de cerrar (la 'X' de la ventana) para no dejar el proceso colgado
+        v2 = Ventana02(master=top, ventana_anterior=self.master)
+        top.protocol("WM_DELETE_WINDOW", v2.back_ventana)    
+
+        
     def fuction_limpiar(self):
         self.txt_des.delete(0, "end")
         self.txt_fecha.delete(0, "end")
@@ -32,7 +49,10 @@ class ventanaPrincipal(Frame):
         self._create_filtro()
         self.create_tabla()
     
-    def _centrar_ventana(self):
+    def _create_menu(self):
+        self.barraMenu = BarraMenu(self.master, self.abrir_ventana02)
+    
+    def centrar_ventana(self):
         self.master.update_idletasks()
 
         ancho = self.master.winfo_width()
@@ -42,24 +62,7 @@ class ventanaPrincipal(Frame):
         y = (self.master.winfo_screenheight() - alto) // 2
 
         self.master.geometry(f"{ancho}x{alto}+{x}+{y}")
-    def _create_menu(self):
-        barra_menu = Menu(self.master)
-
-        self.menu_archivo = Menu(barra_menu, tearoff=0, font=(FUENTE, 9))
-        self.menu_archivo.add_command(label="Salir", command=self.master.quit)
-
-        self.menu_cat = Menu(barra_menu, tearoff=0, font=(FUENTE, 9))
-        self.menu_cat.add_command(label="Visitar")
-
-        self.menu_help = Menu(barra_menu, tearoff=0, font=(FUENTE, 9))
-        self.menu_help.add_command(label="License")
-        self.menu_help.add_command(label="About me")
-
-        barra_menu.add_cascade(label="   Archivo ", menu=self.menu_archivo, font=(FUENTE, 11))
-        barra_menu.add_cascade(label="   Categorías    ", menu=self.menu_cat, font=(FUENTE, 11))
-        barra_menu.add_cascade(label="   Ayuda   ", menu=self.menu_help, font=(FUENTE, 11))
-
-        self.master.config(menu=barra_menu)
+    
             
     def _create_encabezado(self):
 
@@ -105,14 +108,15 @@ class ventanaPrincipal(Frame):
 
         # Los botones van juntos en su propio frame, centrado bajo el formulario
         frame_botones = Frame(form, bg=BACKGASTO)
-        frame_botones.grid(row=4, column=0, columnspan=2, pady=10)
+        frame_botones.grid(row=4, column=0, columnspan=3,pady=10, sticky="nswe")
 
-        self.btnAgregar = Button(frame_botones, text="Agregar", font=(FUENTE, 12), bg="#00bcd4", fg=FG)
-        self.btnLimpiar = Button(frame_botones, text="Limpiar", font=(FUENTE, 12), bg="#4a4a4f", fg=FG, 
-        command=self.fuction_limpiar)
-
-        self.btnAgregar.grid(row=0, column=0, padx=10)
-        self.btnLimpiar.grid(row=0, column=1, padx=10)
+        self.buton = Botones(frame_botones, {
+            "create" : print("create"),
+            "update" : print("update"),
+            "delete" : print("delete"),
+            "clear"  : self.fuction_limpiar
+        })
+        self.buton.pack(fill="both", expand=True)
 
     def _create_filtro(self):
         opciones = ["Comida", "Transporte", "Entretenimiento", "Servicios", "Otros"]
@@ -159,6 +163,4 @@ class ventanaPrincipal(Frame):
 
         scroll.pack(side="right", fill="y")
         self.tabla.pack(side="left", fill="both", expand=True)
-       
-
-        
+               
