@@ -40,7 +40,9 @@ SQL_FILTRO_CATEGORIA ="""
                     SELECT * FROM CATEGORIA
                     WHERE nombre = ?
                     """
-
+SQL_FILTRO_CATEGORIA_TODOS ="""
+                    SELECT * FROM CATEGORIA
+                    """
 
 
 SQL_INSERT_GASTO = "INSERT INTO GASTO(descripcion, monto, categoria_id, fecha) VALUES (?,?,?,?)"
@@ -68,7 +70,11 @@ SQL_FILTRO_GASTO_MONTO_TODOS = """SELECT SUM(gat.monto)
                         FROM CATEGORIA cat INNER JOIN GASTO gat
                         on cat.id = gat.categoria_id 
                         """
-
+SQL_FILTRO_MESES_GASTO="""
+                        SELECT DISTINCT gat.id, gat.descripcion, gat.monto, gat.categoria_id, gat.fecha
+                        FROM GASTO gat
+                        ORDER BY gat.fecha DESC
+                        """
 class GastosRepository:
     
     def __init__(self, ruta_bd):
@@ -133,7 +139,12 @@ class GastosRepository:
     def filtroCategoria(self,nombre):
         with closing(self._conectar()) as con:
             cursor = con.execute(SQL_FILTRO_CATEGORIA, (nombre,))
-            return cursor.fetchall()    
+            return cursor.fetchall() 
+        
+    def filtroCategoriaTODOS(self):
+        with closing(self._conectar()) as con:
+            cursor = con.execute(SQL_FILTRO_CATEGORIA_TODOS)
+            return cursor.fetchall()       
         
     #--------------------GASTOS--------------------
     
@@ -178,3 +189,8 @@ class GastosRepository:
         with closing(self._conectar()) as con:
             cursor = con.execute(SQL_FILTRO_GASTO_MONTO_TODOS)
             return cursor.fetchall()[0]
+        
+    def filtro_meses_gastos(self):
+        with closing(self._conectar()) as con:
+            cursor = con.execute(SQL_FILTRO_MESES_GASTO)
+            return cursor.fetchall()

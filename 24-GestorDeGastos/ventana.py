@@ -113,7 +113,7 @@ class ventanaPrincipal(Frame):
         self.create_tabla()
         self.mostarCBO()
         self.recorrer_tabla() 
-
+        self.filtro_gasto("Todos")
     
     def _create_menu(self):
         self.barraMenu = BarraMenu(self.master, self.abrir_ventana02)
@@ -183,8 +183,7 @@ class ventanaPrincipal(Frame):
         self.buton.pack(fill="both", expand=True)
 
     def _create_filtro(self):
-        meses = ["Todos", "Mes Anterior"]
-        opcion=["Todos"]
+        meses = ["Todos", "Meses"]
         
         panel = Frame(self, bg=BACKGASTO)
         panel.grid(row=2,column=0, sticky="nswe")
@@ -205,6 +204,7 @@ class ventanaPrincipal(Frame):
         self.cboMES_filtro.current(0)
         
         self.cboCAT_filtro.bind("<<ComboboxSelected>>", self.filtro_gasto)
+        self.cboMES_filtro.bind("<<ComboboxSelected>>",self.filtrado_meses)
         
         
         lblMonto = Label(form, text="Monto Total: ", bg=BACKGASTO, fg=FG, font=(FUENTE,12))
@@ -233,8 +233,12 @@ class ventanaPrincipal(Frame):
 
         scroll = ttk.Scrollbar(panel, orient="vertical", command=self.tabla.yview)
         self.tabla.configure(yscrollcommand=scroll.set)
+        scrollx = ttk.Scrollbar(panel, orient="horizontal", command=self.tabla.xview)
+        self.tabla.configure(yscrollcommand=scrollx.set)
+
 
         scroll.pack(side="right", fill="y")
+        scrollx.pack(side="bottom", fill="x")
         self.tabla.pack(side="left", fill="both", expand=True)
         
         self.recorrer_tabla()
@@ -370,5 +374,22 @@ class ventanaPrincipal(Frame):
                 monto = 0.0
             valor = f"S/ {monto:.2f}"
             self.lblmonto["text"] = valor
+            
+    def filtrado_meses(self, event=None):
+        try:
+            mes = self.cboMES_filtro.get().strip()
+            if mes=="Meses":
+                datos=self.d.filtro_meses_gastos()
+                
+                for fila in self.tabla.get_children():
+                   self.tabla.delete(fila)
+                   
+                for dato in datos:
+                    nombreCat = self.d.buscarID_cat(dato[3])
+                    self.tabla.insert("", "end", text=[dato[0]], values=(dato[1], dato[2], nombreCat, dato[4]))
+    
+        except Exception as e:
+            messagebox.showerror("Error", f"Ocurrió un error al filtrar los datos:\n{e}")
+
         
     

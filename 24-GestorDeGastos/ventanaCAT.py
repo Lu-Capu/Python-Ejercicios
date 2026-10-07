@@ -109,6 +109,7 @@ class Ventana02(Frame):
         self.cboNombre_filtro.grid(row=1, column=1, padx=10, pady=(15, 10), sticky="w")
         
         self.cboNombre_filtro.bind("<<ComboboxSelected>>", self.selecion)
+        self.cboNombre_filtro.bind("<<ComboboxSelected>>", self.filtro_categoria)
 
         
     def create_tabla(self):
@@ -235,15 +236,26 @@ class Ventana02(Frame):
             if not nombre:
                 messagebox.showinfo("Advertencia",f"No se encontro la categoria. {nombre}")
                 return
-            datos =self.d.filtroCategoria(nombre)
+            
+            if nombre == "Todos":                         
+                datos =self.d.filtroCategoriaTODOS()
+                for fila in self.tabla.get_children():
+                    self.tabla.delete(fila)                               
+                for dato in datos:
+                        self.tabla.insert("", "end", text=dato[0], values=(dato[1]))   
+                           
+            else:                     
+                datos =self.d.filtroCategoria(nombre)
 
-            for fila in self.tabla.get_children():
-                self.tabla.delete(fila)
-                    
-            for dato in datos:
-                self.tabla.insert("", "end", text=dato[0], values=(dato[1]))   
+                for fila in self.tabla.get_children():
+                    self.tabla.delete(fila)
+                        
+                for dato in datos:
+                    self.tabla.insert("", "end", text=dato[0], values=(dato[1]))   
                  
         except sqlite3.Error as e:
             messagebox.showerror("Error",f"Falla al filtrar. \n{e.args}")
+            
+
         
             
