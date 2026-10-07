@@ -14,6 +14,8 @@ class Ventana02(Frame):
         self.ventana_anterior = ventana_anterior
         self.pack(fill="both", expand=True)
         
+        self.d = GastosRepository(RUTA_BD)
+        
         self.grid_columnconfigure(0, weight=0)
         self.grid_columnconfigure(1, weight=1)  
         self.grid_rowconfigure(0, weight=0)
@@ -100,9 +102,13 @@ class Ventana02(Frame):
         
         lbl_nombre=Label(form, text="Nombre: ", bg=BACKGASTO, fg=FG, font=(FUENTE,12))
         self.cboNombre_filtro = ttk.Combobox(form, state="readonly", font=(FUENTE, 12))
+        lbl00 = Label(form,text="Filtro", bg=BACKGASTO, fg=FG, font=(FUENTE,18, "bold"))
         
-        lbl_nombre.grid(row=0, column=0, padx=10, pady=5, sticky="nsw")
-        self.cboNombre_filtro.grid(row=0, column=1, padx=10, pady=(15, 10), sticky="w")
+        lbl00.grid(row=0, column=0, padx=10, pady=5, sticky="nsw")
+        lbl_nombre.grid(row=1, column=0, padx=10, pady=5, sticky="nsw")
+        self.cboNombre_filtro.grid(row=1, column=1, padx=10, pady=(15, 10), sticky="w")
+        
+        self.cboNombre_filtro.bind("<<ComboboxSelected>>", self.selecion)
 
         
     def create_tabla(self):
@@ -133,8 +139,8 @@ class Ventana02(Frame):
         
     def recorrer_tabla(self):
         #INSERTAR DATOS EN TABLA
-        d = GastosRepository(RUTA_BD)
-        datos = d.getdatos()
+
+        datos = self.d.getdatos()
         #Limpiamos
         for fila in self.tabla.get_children():
             self.tabla.delete(fila)
@@ -143,10 +149,10 @@ class Ventana02(Frame):
             self.tabla.insert("", "end", text=[dato[0]], values=(dato[1],))
             
     def mostarCBO(self):
-        d = GastosRepository(RUTA_BD)
-        datos = d.getdatos()
+        datos = self.d.getdatos()
         nombres = [dato[1] for dato in datos]
-        self.cboNombre_filtro['values'] = nombres
+        opciones_filtro = ['Todos'] + nombres
+        self.cboNombre_filtro['values'] = opciones_filtro
         if nombres:
             self.cboNombre_filtro.current(0)
     
@@ -176,8 +182,7 @@ class Ventana02(Frame):
         if nombre is None:
             return
         try:
-            d = GastosRepository(RUTA_BD)
-            d.insertar_cat(nombre)
+            self.d.insertar_cat(nombre)
             messagebox.showinfo("Éxito", f"Categoria: {nombre} \nRegistrada correctamente")
             self.recorrer_tabla()
             self.mostarCBO()
@@ -188,12 +193,13 @@ class Ventana02(Frame):
     def editar_categoria(self):
         nombre = self.getdato()
         try:
-            d = GastosRepository(RUTA_BD)
-            if d.actualizar_cat(nombre, self.selecion()):
+            if self.d.actualizar_cat(nombre, self.selecion()):
                 self.recorrer_tabla()
                 self.mostarCBO()
                 self.clear()
                 messagebox.showinfo("Éxito","El campo fue actualizado con éxito")
+            else:
+                messagebox.showinfo("Fallo","El campo No fue actualizado")
         except sqlite3.Error as e:
             messagebox.showerror("Error", f"Ocurrió un error al editar datos:\n{e}")
     
@@ -201,13 +207,43 @@ class Ventana02(Frame):
         txt = self.txt_nombre.get().strip()
         if not txt:
             messagebox.showinfo("Advertencia", "Ha dejado un campo vacio \n Tal vez con espacios")
+            return
         try:
-            d = GastosRepository(RUTA_BD)
-            if d.eliminar_cat(self.selecion()):
-                self.recorrer_tabla()
-                self.mostarCBO()
-                self.clear()
-                messagebox.showinfo("Éxito","El campo fue eliminado con éxito")
+            respuesta = messagebox.askyesno(
+                            "Confirmar eliminación", 
+                            "¿Está seguro de que desea eliminar este gasto?\nEsta acción no se puede deshacer.")
+            if respuesta:
+
+                if self.d.eliminar_cat(self.selecion()):
+                    self.recorrer_tabla()
+                    self.mostarCBO()
+                    self.clear()
+                    messagebox.showinfo("Éxito","El campo fue eliminado con éxito")
+                else:
+                        messagebox.showinfo("Fallo","El campo No fue eliminado")
+            else:
+                messagebox.showinfo("Advertencia ","Eliminación cancelada por el usuario.")
+            
+    
+
         except sqlite3.Error as e:
             messagebox.showerror("Error", "La categoría tiene gastos asociados")
+            
+    def filtro_categoria(self, event=None):
+        try:
+            nombre = self.cboNombre_filtro.get()
+            if not nombre:
+                messagebox.showinfo("Advertencia",f"No se encontro la categoria. {nombre}")
+                return
+            datos =self.d.filtroCategoria(nombre)
+
+            for fila in self.tabla.get_children():
+                self.tabla.delete(fila)
+                    
+            for dato in datos:
+                self.tabla.insert("", "end", text=dato[0], values=(dato[1]))   
+                 
+        except sqlite3.Error as e:
+            messagebox.showerror("Error",f"Falla al filtrar. \n{e.args}")
+        
             

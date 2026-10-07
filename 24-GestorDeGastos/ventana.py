@@ -5,6 +5,7 @@ from ui.BarraMenu import BarraMenu
 from ventanaCAT import Ventana02
 from database import GastosRepository
 import sqlite3
+from datetime import datetime
 
 class ventanaPrincipal(Frame):
 
@@ -47,36 +48,61 @@ class ventanaPrincipal(Frame):
         self.txt_monto.delete(0, "end")
         if self.cbo_cat['values']:
             self.cbo_cat.current(0)
+        self.id_gasto = None
         self.txt_des.focus()
     
     def getdatos(self):
         descripcion = self.txt_des.get().strip()
-        fecha = self.txt_fecha.get().strip()
-        monto = self.txt_monto.get().strip()
-        categoria = self.cbo_cat.get().strip()
-        if not descripcion or not fecha or not monto or not categoria:
-            messagebox.showinfo("Advertencia", "Por favor, complete todos los campos.")
+        fecha_str = self.txt_fecha.get().strip()
+        monto_str = self.txt_monto.get().strip()
+        categoria_nombre = self.cbo_cat.get()
+
+        if not descripcion or not fecha_str or not monto_str or not categoria_nombre:
+            messagebox.showwarning("Advertencia", "Por favor, complete todos los campos.")
             return None
+
+        fecha_obj = None
+        for fmt in ("%d/%m/%y", "%d/%m/%Y", "%Y-%m-%d"):
+            try:
+                fecha_obj = datetime.strptime(fecha_str, fmt)
+                break
+            except ValueError:
+                continue
+        if fecha_obj is None:
+            messagebox.showerror(
+                "Error de fecha", 
+                "La fecha debe tener el formato DD/MM/AA o DD/MM/AAAA (Ejemplo: 09/08/26)."
+            )
+            return None
+        fecha_formateada = fecha_obj.strftime("%Y-%m-%d")
+
         try:
-            monto = float(monto)
+            monto = float(monto_str)
             if monto <= 0:
-                messagebox.showwarning("Advertencia", "El monto debe ser un número mayor a 0.")
+                messagebox.showwarning("Advertencia", "El monto debe ser mayor a 0.")
                 return None
         except ValueError:
-            messagebox.showerror("Error de formato", "El monto debe ser un número válido (Ejemplo: 15.50).")
+            messagebox.showerror("Error", "El monto debe ser un número válido.")
             return None
-        #Transformamos categoria en id
-        catID = self.d.buscarNombre_cat(categoria)
-        if catID is None:
-            messagebox.showerror("Error", "No se encontro la categoria selecionada")
+
+
+        cat_id = self.d.buscarNombre_cat(categoria_nombre)
+        if cat_id is None:
+            messagebox.showerror("Error", "No se encontró la categoría seleccionada.")
             return None
-        return descripcion,fecha,monto,catID
+
+        return descripcion, fecha_formateada, monto, cat_id
     
     def setdatos(self, descripcion, monto, nommbreCAT, fecha):
         self.fuction_limpiar()
         self.txt_des.insert(0,descripcion)
         self.txt_monto.insert(0,monto)
         self.cbo_cat.set(nommbreCAT)
+        try:
+            fecha_obj = datetime.strptime(fecha, "%Y-%m-%d")
+            fecha = fecha_obj.strftime("%d/%m/%y")
+        except ValueError:
+            pass
         self.txt_fecha.insert(0,fecha)
            
     def _create_widgets(self):
@@ -87,6 +113,7 @@ class ventanaPrincipal(Frame):
         self.create_tabla()
         self.mostarCBO()
         self.recorrer_tabla() 
+
     
     def _create_menu(self):
         self.barraMenu = BarraMenu(self.master, self.abrir_ventana02)
@@ -157,23 +184,33 @@ class ventanaPrincipal(Frame):
 
     def _create_filtro(self):
         meses = ["Todos", "Mes Anterior"]
+        opcion=["Todos"]
         
         panel = Frame(self, bg=BACKGASTO)
         panel.grid(row=2,column=0, sticky="nswe")
         form = Frame(panel, bg=BACKGASTO)    
         form.pack(padx=10,pady=5, side="left")
+        lbl00 = Label(form,text="Filtro", bg=BACKGASTO, fg=FG, font=(FUENTE,18, "bold"))
         
         lbl0=Label(form, text="Categoría: ", bg=BACKGASTO, fg=FG, font=(FUENTE,12))
         lbl1=Label(form, text="Mes: ", bg=BACKGASTO, fg=FG, font=(FUENTE,12))
         self.cboCAT_filtro = ttk.Combobox(form, state="readonly", font=(FUENTE, 12))
         self.cboMES_filtro = ttk.Combobox(form, values=meses, state="readonly", font=(FUENTE, 12))
-        
-        lbl0.grid(row=0, column=0, padx=10, pady=5, sticky="nsw")
-        self.cboCAT_filtro.grid(row=0, column=1, padx=10, pady=(15, 10), sticky="w")
+        lbl00.grid(row=0, column=0, padx=10, pady=5, sticky="nsw")
+        lbl0.grid(row=1, column=0, padx=10, pady=5, sticky="nsw")
+        self.cboCAT_filtro.grid(row=1, column=1, padx=10, pady=(15, 10), sticky="w")
 
-        lbl1.grid(row=1, column=0, padx=10, pady=5, sticky="nsw")
-        self.cboMES_filtro.grid(row=1, column=1, padx=10, pady=(5, 10), sticky="w")
+        lbl1.grid(row=2, column=0, padx=10, pady=5, sticky="nsw")
+        self.cboMES_filtro.grid(row=2, column=1, padx=10, pady=(5, 10), sticky="w")
         self.cboMES_filtro.current(0)
+        
+        self.cboCAT_filtro.bind("<<ComboboxSelected>>", self.filtro_gasto)
+        
+        
+        lblMonto = Label(form, text="Monto Total: ", bg=BACKGASTO, fg=FG, font=(FUENTE,12))
+        self.lblmonto = Label(form, text="", bg=BACKGASTO, fg=FG, font=(FUENTE,16, "bold"))
+        lblMonto.grid(row=3, column=0, padx=10, pady=(5, 10), sticky="w")
+        self.lblmonto.grid(row=3, column=1, padx=10, pady=(5, 10), sticky="w")
         
     def create_tabla(self):
         
@@ -207,12 +244,15 @@ class ventanaPrincipal(Frame):
 
         datos = self.d.getdatos()
         nombres = [dato[1] for dato in datos]
-        self.cboCAT_filtro['values'] = nombres
+        
+        opciones_filtro = ["Todos"] + nombres
         self.cbo_cat['values'] = nombres
+        self.cboCAT_filtro['values'] = opciones_filtro
+
         if nombres:
             self.cboCAT_filtro.current(0)
             self.cbo_cat.current(0)
-            
+        
     def insertar_gastos(self):
         try:
             datos = self.getdatos()
@@ -235,7 +275,8 @@ class ventanaPrincipal(Frame):
             self.tabla.delete(fila)
         #Agregamos
         for dato in datos:
-            self.tabla.insert("", "end", text=[dato[0]], values=(dato[1],dato[2],dato[3],dato[4]))
+            nombreCat = self.d.buscarID_cat(dato[3])
+            self.tabla.insert("", "end", text=[dato[0]], values=(dato[1], dato[2], nombreCat, dato[4]))
     
     def actualizar_gasto(self):
         try:
@@ -247,7 +288,9 @@ class ventanaPrincipal(Frame):
                 if self.d.actualizar_gasto(descripcion, monto, cat_id, fecha, self.id_gasto):
                     self.recorrer_tabla()
                     self.fuction_limpiar()
-                    messagebox.showinfo("Éxito", "Se ha actualizado correctamente los datos") 
+                    messagebox.showinfo("Éxito", "Se ha actualizado correctamente los datos")
+                else:
+                    messagebox.showinfo("Fallo","El campo No fue actualizado")
         except sqlite3.Error as e:
             messagebox.showerror("Error", f"Ocurrio un error al actualizar datos \n{e}")
     
@@ -256,27 +299,76 @@ class ventanaPrincipal(Frame):
         if not cod:
             return
         item = cod[0]
-        self.id_gasto = self.tabla.item(item,"text")
         descripcion = self.tabla.item(item, "values")[0]
         monto = self.tabla.item(item, "values")[1]
-        id_cat = self.tabla.item(item, "values")[2]
+        nombre = self.tabla.item(item, "values")[2]
         fecha = self.tabla.item(item, "values")[3]
-        nombre = self.d.buscarID_cat(id_cat)
         if not nombre:
             messagebox.showinfo("Advertencia","No se pudo encontrar la Categoria selecionada")
             return
         self.setdatos(descripcion, monto, nombre, fecha)
+        self.id_gasto = self.tabla.item(item,"text")
     
     def eliminar_gastos(self):
         try:
             if self.id_gasto is None:
                 messagebox.showinfo("Advertencia","Selecione una fila a eliminar")
                 return
+            respuesta = messagebox.askyesno("Confirmar eliminación", 
+                                        "¿Está seguro de que desea eliminar este gasto?\nEsta acción no se puede deshacer.")
             cod=self.id_gasto
-            if self.d.eliminar_gasto(cod):
-                self.recorrer_tabla()
-                self.fuction_limpiar()
-                messagebox.showinfo("Éxito", "Se ha eliminado correctamente los datos") 
+            if respuesta:
+                if self.d.eliminar_gasto(cod):
+                    self.recorrer_tabla()
+                    self.fuction_limpiar()
+                    messagebox.showinfo("Éxito", "Se ha eliminado correctamente los datos") 
+                else:
+                    messagebox.showinfo("Fallo","El campo No fue eliminado")
+            else:
+                messagebox.showinfo("Advertencia ","Eliminación cancelada por el usuario.")
         except sqlite3.Error as e:
             messagebox.showerror("Error", f"Ocurrio un error al eliminar datos \n{e}")
+            
+    def filtro_gasto(self, event=None): 
+        try:
+            nombre = self.cboCAT_filtro.get()
+            
+            if nombre == "Todos" or not nombre:
+                self.recorrer_tabla()
+                resultado=self.d.filtroGastoMONTO_TODOS()
+                monto = resultado[0] if resultado else None
+                if monto is None:
+                        monto = 0.0
+                valor = f"S/ {monto:.2f}"
+                self.lblmonto["text"] = valor
+                return
+            
+            cod = self.d.buscarNombre_cat(nombre)
+            if not cod:
+                messagebox.showinfo("Advertencia", f"No se encontró la categoría: {nombre}")
+                return
+
+            gastos_filtrados = self.d.filtroGasto(cod)
+            
+            # Limpiar
+            for fila in self.tabla.get_children():
+                self.tabla.delete(fila)
+
+            for dato in gastos_filtrados:
+
+                self.tabla.insert("", "end", text=dato[0], values=(dato[1], dato[2], dato[3], dato[4]))
+            self.monto_filtrado(nombre)
+
+            
+        except sqlite3.Error as e:
+            messagebox.showerror("Error de Base de Datos", f"Ocurrió un error:\n{e}")
+    
+    def monto_filtrado(self, nombre):
+            resultado = self.d.filtroGastoMONTO(nombre)
+            monto = resultado[0] if resultado else None
+            if monto is None:
+                monto = 0.0
+            valor = f"S/ {monto:.2f}"
+            self.lblmonto["text"] = valor
+        
     

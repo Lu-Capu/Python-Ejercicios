@@ -13,7 +13,7 @@ SQL_CREATEBD = """
                     descripcion TEXT NOT NULL,
                     monto REAL NOT NULL CHECK(monto > 0),
                     categoria_id INTEGER NOT NULL,
-                    fecha TEXT NOT NULL,
+                    fecha DATE NOT NULL,
                     FOREIGN KEY(categoria_id) REFERENCES CATEGORIA(id) ON DELETE RESTRICT
                 );
                 """
@@ -36,6 +36,13 @@ SCRIPT_CATEGORIA = """
                        #error(Menos el de los foraneos **
                        # Para eso esta el DELETE ON y el PRAGMA**), lo quita SILENCIOSAMENTE(No lanza error)
 
+SQL_FILTRO_CATEGORIA ="""
+                    SELECT * FROM CATEGORIA
+                    WHERE nombre = ?
+                    """
+
+
+
 SQL_INSERT_GASTO = "INSERT INTO GASTO(descripcion, monto, categoria_id, fecha) VALUES (?,?,?,?)"
 SQL_READ_GASTO= "SELECT * FROM GASTO WHERE nombre=?"
 SQL_DELETE_GASTO = "DELETE FROM GASTO WHERE id=?"
@@ -44,6 +51,23 @@ SQL_UPDATE_GASTO = """
                     SET descripcion=?, monto=?, categoria_id=?, fecha=? 
                     WHERE id=?
                     """
+SQL_FILTRO_GASTO ="""
+                    SELECT g.id, g.descripcion, g.monto, c.nombre, g.fecha
+                    FROM GASTO g
+                    INNER JOIN CATEGORIA c ON g.categoria_id = c.id
+                    WHERE g.categoria_id = ?
+                    ORDER BY g.fecha DESC
+                    """
+                    
+SQL_FILTRO_GASTO_MONTO = """SELECT SUM(gat.monto) 
+                        FROM CATEGORIA cat INNER JOIN GASTO gat
+                        on cat.id = gat.categoria_id 
+                        WHERE nombre = ?
+                        """
+SQL_FILTRO_GASTO_MONTO_TODOS = """SELECT SUM(gat.monto) 
+                        FROM CATEGORIA cat INNER JOIN GASTO gat
+                        on cat.id = gat.categoria_id 
+                        """
 
 class GastosRepository:
     
@@ -105,6 +129,12 @@ class GastosRepository:
         with closing(self._conectar()) as con:
             cursor = con.execute("SELECT * FROM CATEGORIA")
             return cursor.fetchall()
+        
+    def filtroCategoria(self,nombre):
+        with closing(self._conectar()) as con:
+            cursor = con.execute(SQL_FILTRO_CATEGORIA, (nombre,))
+            return cursor.fetchall()    
+        
     #--------------------GASTOS--------------------
     
     def insertar_gasto(self, descripcion, monto, categoria_id, fecha):
@@ -133,4 +163,18 @@ class GastosRepository:
         with closing(self._conectar()) as con:
             cursor = con.execute("SELECT * FROM GASTO")
             return cursor.fetchall()
+
+    def filtroGasto(self,id_gasto):
+        with closing(self._conectar()) as con:
+            cursor = con.execute(SQL_FILTRO_GASTO, (id_gasto,))
+            return cursor.fetchall()
         
+    def filtroGastoMONTO(self,nombre):
+        with closing(self._conectar()) as con:
+            cursor = con.execute(SQL_FILTRO_GASTO_MONTO, (nombre,))
+            return cursor.fetchall()[0]
+        
+    def filtroGastoMONTO_TODOS(self):
+        with closing(self._conectar()) as con:
+            cursor = con.execute(SQL_FILTRO_GASTO_MONTO_TODOS)
+            return cursor.fetchall()[0]
